@@ -38,9 +38,6 @@
     <ClInclude Include="Ship.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="States.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameStates.h">
       <Filter>Header Files</Filter>
     </ClInclude>

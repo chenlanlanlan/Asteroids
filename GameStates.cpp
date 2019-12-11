@@ -10,6 +10,10 @@ GameStates::GameStates(const String& item1, const String& item2, int gameState)
 	selevtedItemIndex = 0;
 	txtR1 = list[0].getGlobalBounds();
 	txtR2 = list[1].getGlobalBounds();
+	if (gameState == MENU) {
+		sound_bf.loadFromFile(START_SOUND_PATH);
+		sound.setBuffer(sound_bf);
+	}
 }
 
 void GameStates::setText(Text& txt, int fontSize, Vector2f pos, String str, Color color)
@@ -97,8 +101,9 @@ void GameStates::handleMouseMove(Event::MouseMoveEvent mouse)
 
 void GameStates::handleMouseButton(RenderWindow& window, Mouse::Button button, int& gameState)
 {
-	if (button == Mouse::Button::Left)
+	if (button == Mouse::Button::Left) {
 		setGameState(window, gameState);
+	}
 }
 
 void GameStates::setGameState(RenderWindow& window, int& gameState)
@@ -106,8 +111,10 @@ void GameStates::setGameState(RenderWindow& window, int& gameState)
 	switch (gameState)
 	{
 	case MENU:
-		if (selevtedItemIndex == 0)
+		if (selevtedItemIndex == 0){
+			sound.play();
 			gameState = PLAYING;
+		}
 		else
 			window.close();
 	break;

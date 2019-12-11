@@ -1,6 +1,7 @@
 #pragma once
 #include "Define.h"
 #include "GameStates.h"
+#include "Ship.h"
 
 using namespace sf;
 
@@ -16,18 +17,17 @@ private:
 	Sprite bg;
 	Font font;
 	Text gameTitle, instruction, lifeTitle, life, scoreTitle, score, winMsg, lostMsg;
-	SoundBuffer startSound_bf, lostLifeSound_bf;
-	Sound startSound, lostLifeSound;
+	SoundBuffer lostLifeSound_bf;
+	Sound lostLifeSound;
 	CircleShape shape;
 	Clock clock;
 	//Menu menu;
 	GameStates gameMenu, gameOver;
+	Ship player;
 	int gameState;
 	int lifeCount, scoreCount;
 
 	void getEventFromUser(Time dt);
-	void handleKeyboardInput();
-	void handleMouseInput();
 	void setTextureFile();
 	void setText(Text& txt, int fontSize, Vector2f pos, String str);
 	void initialStates();

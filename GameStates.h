@@ -16,6 +16,8 @@ private:
 	Text list[2];
 	FloatRect txtR1, txtR2;
 	Font font;
+	SoundBuffer sound_bf;
+	Sound sound;
 	int gameState;
 	void handleKeyboardInput(RenderWindow& window, Keyboard::Key event, int& gameState);
 	void handleMouseMove(Event::MouseMoveEvent mouse);

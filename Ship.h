@@ -1,6 +1,7 @@
 #pragma once
 #include "Define.h"
 
+
 using namespace sf;
 
 class Ship
@@ -12,9 +13,8 @@ public:
 	Ship();
 	void drawShip(RenderWindow &window);
 	void handleUserInput(Time dt, Keyboard::Key key);
-	void push(Time dt);
+	void update(Time dt);
 	void resetShip();
-	void normalized(Vector2f &direction);
 	void destoryShip();
 
 private:
@@ -22,10 +22,10 @@ private:
 	Texture ship_texture1, ship_texture2, ship_exp_texture;
 	SoundBuffer ship_expo;
 	SoundBuffer ship_thurst;
-	
 	Sound thurst_sound;
 	float radius, degree;
 	bool thrust;
 	void moveShip(Time dt);
+	void normalized(Vector2f& direction);
 };
 

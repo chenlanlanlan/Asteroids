@@ -2,12 +2,7 @@
 
 Ship::Ship()
 {
-
-	velocity = Vector2f(0, 0);
-	position = Vector2f(WINDOWWIDTH / 2, WINDOWHEIGHT / 2); //center
-	speed = 0;
-	degree = 0;
-
+	resetShip();
 	thrust = false;
 	ship_texture1.loadFromFile(SHIP_IMAGE1_PATH);
 	ship_texture2.loadFromFile(SHIP_IMAGE2_PATH);
@@ -15,14 +10,12 @@ Ship::Ship()
 	ship_thurst.loadFromFile(THRUST_SOUND_PATH);
 	ship_expo.loadFromFile(THRUST_SOUND_PATH);
 	radius = SHIP_RADIUS;
-
 	ship.setRadius(radius);
 	ship.setOrigin(Vector2f(radius, radius));
 	ship.setPosition(position);
 	ship.setTexture(&ship_texture1);
 	expo_sound.setBuffer(ship_expo);
 	thurst_sound.setBuffer(ship_thurst);
-
 }
 
 void Ship::drawShip(RenderWindow& window)
@@ -55,16 +48,13 @@ void Ship::handleUserInput(Time dt, Keyboard::Key key)
 			ship.setTexture(&ship_texture1);
 			thrust = false;
 	break;
-	case sf::Keyboard::Space:
-	break;
 	}
-	//std::cout << thrust << std::endl;
 }
 
-void Ship::push(Time dt)
+void Ship::update(Time dt)
 {
 	if(!thrust)
-		speed -= 1;
+		speed -= 0.5;
 	if (speed <= 0) {
 		speed = 0;
 	}
@@ -73,10 +63,8 @@ void Ship::push(Time dt)
 	velocity.y += sin(degree * DEGTORAD);
 	normalized(velocity);
 
-	//ship.move(velocity * dt.asSeconds() * speed);
 	position.x +=  velocity.x * dt.asSeconds() * speed;
 	position.y +=  velocity.y * dt.asSeconds() * speed;
-
 	if (position.x > WINDOWWIDTH) position.x = 0;
 	if (position.y > WINDOWHEIGHT) position.y = 0;
 	if (position.x < 0) position.x = WINDOWWIDTH;
@@ -91,7 +79,7 @@ void Ship::moveShip(Time dt)
 	}
 	else {
 		ship.rotate(degree * ROTATE_SPEED * dt.asSeconds());
-		push(dt);
+		update(dt);
 	}
 }
 

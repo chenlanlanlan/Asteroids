@@ -4,6 +4,8 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 #include "Ship.h"
 #include "Bullet.h"
 #include "Asteroids.h"
@@ -31,23 +33,27 @@
 #define BULLETHEIGHT 20.f
 
 //for Asteroid class
-#define ASTER_SPEED 30.f;
-#define ASTER_RADIUS 60.f;
+#define ASTER_SPEED 30.f
+#define ASTER_RADIUS 40.f
+#define ASTER_LIFE 3
 
-
+//image
 #define BG_PATH "images/bg.png"
 #define SHIP_IMAGE1_PATH "images/plane1.png"
 #define SHIP_IMAGE2_PATH "images/plane.png"
 #define SHIP_EXP_IMAGE_PATH "images/ship_exp.png"
 #define BULLET_IMAGE_PATH "images/bullet.png"
 #define ASTER_EXP_IMAGE_PATH "images/aster_exp.png"
-#define ASTER_IMAGE_PATH "images/aster.png"
-
+#define ASTER_IMAGE_PATH "images/aster1.png"
+//font
 #define FONT_PATH "assets/KenPixel Square.ttf"
 
+//sound
 #define START_SOUND_PATH "assets/launch1.wav"
-#define EXPO_SOUND_PATH "assets/beat1.wav"
+#define EXPO_SOUND_PATH "assets/bangLarge.wav"
+#define ASTER_EXPO_SOUND "assets/bangSmall.wav"
 #define THRUST_SOUND_PATH "assets/thrust.wav"
 #define FIRE_SOUND_PATH "assets/fire.wav"
 
 enum states { MENU, PLAYING, NEXTLEVEL, GAMEOVER };
+enum types {SMALL, MED, LARGE};

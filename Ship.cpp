@@ -8,9 +8,9 @@ Ship::Ship()
 	ship_texture2.loadFromFile(SHIP_IMAGE2_PATH);
 	ship_exp_texture.loadFromFile(SHIP_EXP_IMAGE_PATH);
 	ship_thurst.loadFromFile(THRUST_SOUND_PATH);
-	ship_expo.loadFromFile(THRUST_SOUND_PATH);
+	ship_expo.loadFromFile(EXPO_SOUND_PATH);
 	radius = SHIP_RADIUS;
-	ship.setRadius(radius);
+	ship.setRadius(SHIP_RADIUS);
 	ship.setOrigin(Vector2f(radius, radius));
 	ship.setPosition(position);
 	ship.setTexture(&ship_texture1);
@@ -90,6 +90,7 @@ void Ship::resetShip()
 	speed = 0;
 	thrust = false;
 	degree = 0;
+
 }
 
 void Ship::normalized(Vector2f& vec)
@@ -100,6 +101,5 @@ void Ship::normalized(Vector2f& vec)
 
 void Ship::destoryShip()
 {
-	ship.setTexture(&ship_exp_texture);
 	expo_sound.play();
 }

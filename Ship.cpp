@@ -90,7 +90,7 @@ void Ship::resetShip()
 	speed = 0;
 	thrust = false;
 	degree = 0;
-
+	ship.setRotation(degree);
 }
 
 void Ship::normalized(Vector2f& vec)

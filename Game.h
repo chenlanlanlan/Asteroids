@@ -30,7 +30,7 @@ private:
 	int gameState, level;
 	int lifeCount, scoreCount;
 	float protectedTime;
-	bool isProtected, isPlaying;
+	bool isProtected, isPlaying, isFromGAMEOVER;
 
 	void getEventFromUser(Time dt);
 	void setTextureFile();
@@ -46,6 +46,7 @@ private:
 	bool isBulletCollidewithAster(RectangleShape s1, CircleShape s2);
 	void bullet_aster_collision(std::vector<Asteroids>& new_asteroids, int& scoreCount);
 	void ship_aster_collision();
+	void asters_collision();
 };
 
 

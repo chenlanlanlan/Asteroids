@@ -13,7 +13,7 @@ clock(), font(), player()
 	initialStates();
 	gameState = MENU;
 	bullets.clear();
-	isProtected = false;
+	isProtected = isFromGAMEOVER = false;
 	protectedTime = 5.f;
 	designLevel(level);
 }
@@ -35,33 +35,37 @@ void Game::run()
 				std::cout << "level: " << level << std::endl;
 				break;
 			}
-			gameMenu.getEventFromUser(game_window, gameState);
+			gameMenu.getEventFromUser(game_window, gameState, isFromGAMEOVER);
 		break;
 		case PLAYING:
 			std::cout << "size: " << asteroids.size() << std::endl;
 			getEventFromUser(dt);
 			player.update(dt);
+			bullet_aster_collision(new_asteroids, scoreCount);
+
 			updateAsteroids(dt);
 			updateBullet(dt);
-			bullet_aster_collision(new_asteroids, scoreCount);
 			if (lifeCount < 0) {
 				gameState = GAMEOVER;
+				lostLifeSound.play();
 				break;
 			}
 			protectedTime -= dt.asSeconds();
 			if (protectedTime - dt.asSeconds() <= 0) {
-				//std::cout << isProtected << std::endl;
 				isProtected = false;
 				protectedTime = 5.f;
 			}
+			player.ship.setOutlineThickness(0);
+			//player.ship.setOutlineColor(Color::White);
 			if (!isProtected)	ship_aster_collision();
 			if (asteroids.size() == 0 && scoreCount != 0) gameState = NEXTLEVEL;
 		break;
 		case NEXTLEVEL:
 			getEventFromUser(dt);
+			fire_sound.play();
 		break;
 		case GAMEOVER:
-			gameOver.getEventFromUser(game_window, gameState);
+			gameOver.getEventFromUser(game_window, gameState, isFromGAMEOVER);
 		break;
 		}
 		render();
@@ -79,8 +83,11 @@ void Game::getEventFromUser(Time dt)
 			game_window.close();
 		break;
 		case Event::KeyPressed:			// handle key pressed
-			if (Keyboard::isKeyPressed(Keyboard::Escape))
+			if (Keyboard::isKeyPressed(Keyboard::Escape)) {
 				gameState = MENU;
+				initialStates();
+				designLevel(level);
+			}
 			player.handleUserInput(dt, event.key.code);
 			if (Keyboard::isKeyPressed(Keyboard::Space)) {
 				if (gameState == NEXTLEVEL) {
@@ -124,6 +131,7 @@ void Game::setText(Text& txt, int fontSize, Vector2f pos, String str)
 
 void Game::initialStates()
 {
+	srand(time(NULL));
 	level = 5;
 	scoreCount = 0;
 	lifeCount = 3;
@@ -199,6 +207,7 @@ void Game::updateBullet(Time dt)
 
 void Game::updateAsteroids(Time dt)
 {
+	asters_collision();
 	start_asteroids = asteroids.begin();
 	while (start_asteroids != asteroids.end()) {
 		if (start_asteroids->isAlive()) {
@@ -224,7 +233,7 @@ void Game::designLevel(int level)
 	srand(time(NULL));
 	for (int i = 1; i <= level; i++) {
 		Vector2f pos = Vector2f(0 + rand() % (WINDOWWIDTH + 0 - 1), 0 + rand() % (WINDOWHEIGHT + 0 - 1));
-		Asteroids* aster = new Asteroids(pos, ASTER_SPEED + level - 3);
+		Asteroids* aster = new Asteroids(pos, ASTER_SPEED + level - 3, i);
 		asteroids.push_back(*aster);
 	}
 }
@@ -276,6 +285,53 @@ void Game::ship_aster_collision()
 			std::cout << "life: " << lifeCount << std::endl;
 		}
 		++start_asteroids;
+	}
+}
+
+void Game::asters_collision()
+{
+	Vector2f offset;
+	for (auto& a : asteroids) {
+		for (auto& target : asteroids) {
+			Vector2f pos1 = a.asteroid.getPosition();
+			Vector2f pos2 = target.asteroid.getPosition();
+			if (a.getIndex() == target.getIndex()) break;
+			if (isShipCollidewithAster(a.asteroid, target.asteroid)) {
+				//std::cout << "a_vel : " << a.getIndex() << " 1 : " << a.velocity.x << ", " << a.velocity.y << std::endl;
+				//std::cout << "taget_vel : " << target.getIndex() << " 1 : " << target.velocity.x << ", " << target.velocity.y << std::endl;
+				Vector2f offset, tmp;
+				Vector2f distanceVector = pos2 - pos1; //from a  to target
+				float distance = sqrtf(distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y);
+				float overlap = a.asteroid.getRadius()+3 + target.asteroid.getRadius()+3 - distance;
+				// a and target exchange velocity
+				Vector2f newVelocity = Vector2f(distanceVector.x / distance, distanceVector.y / distance);
+				tmp = a.velocity;
+				a.setVelocity(-1 * abs(target.velocity.x), -1 * abs(target.velocity.y));
+				target.setVelocity(-1 * abs(tmp.x), -1 * abs(tmp.y));
+				std::cout << "a_vel : " <<a.getIndex()<<" 2 : "<< a.velocity.x <<", "<<a.velocity.y  << std::endl;
+				std::cout << "taget_vel : " << target.getIndex() << " 2 : " << target.velocity.x << ", " << target.velocity.y << std::endl;
+				
+				offset.x = newVelocity.x * (overlap / 2);
+				offset.y = newVelocity.y * (overlap / 2);
+				a.asteroid.move(-offset);
+				target.asteroid.move(offset);
+				target.asteroid.setOutlineColor(Color(255%rand(), 255%rand(), 255%rand()));
+				break;
+
+				/*float overlap = 0.5 * (distance - a.asteroid.getRadius() - 2 - target.asteroid.getRadius() - 2);
+				Vector2f offest;
+				offest.x -= overlap * ((pos1.x - pos2.x) / distance);
+				offest.y -= overlap * ((pos1.y - pos2.y) / distance);
+				a.setVelocity((pos2.x - pos1.x) / distance, (pos2.y - pos1.y) / distance);
+				a.asteroid.move(offest);
+
+				offest.x += overlap * ((pos1.x - pos2.x) / distance);
+				offest.y += overlap * ((pos1.y - pos2.y) / distance);
+				target.asteroid.move(offest);
+				target.setVelocity(-(pos1.x - pos2.x) / distance, -(pos1.x - pos2.x) / distance);*/
+				
+			}
+		}
 	}
 }
 

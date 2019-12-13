@@ -35,7 +35,7 @@ void GameStates::draw(RenderWindow& window, Vector2f titlePos, String title)
 	}
 }
 
-void GameStates::getEventFromUser(RenderWindow& window, int& gameState)
+void GameStates::getEventFromUser(RenderWindow& window, int& gameState, bool& isFromGAMEOVER)
 {
 	sf::Event event;
 	while (window.pollEvent(event))
@@ -44,7 +44,7 @@ void GameStates::getEventFromUser(RenderWindow& window, int& gameState)
 		{
 		case Event::KeyPressed:
 			// handle key pressed
-			handleKeyboardInput(window, event.key.code, gameState);
+			handleKeyboardInput(window, event.key.code, gameState, isFromGAMEOVER);
 			break;
 		case Event::MouseMoved:
 			// handle mouse button pressed
@@ -52,7 +52,7 @@ void GameStates::getEventFromUser(RenderWindow& window, int& gameState)
 			break;
 		case Event::MouseButtonPressed:
 			//handle mouse button pressed
-			handleMouseButton(window, event.mouseButton.button, gameState);
+			handleMouseButton(window, event.mouseButton.button, gameState, isFromGAMEOVER);
 			break;
 		case Event::Closed:
 			window.close();
@@ -75,7 +75,7 @@ void GameStates::selectQuit()
 	list[1].setFillColor(Color(46, 130, 158)); //selected color
 }
 
-void GameStates::handleKeyboardInput(RenderWindow& window, Keyboard::Key event, int& gameState)
+void GameStates::handleKeyboardInput(RenderWindow& window, Keyboard::Key event, int& gameState, bool& isFromGAMEOVER)
 {
 	switch (event)
 	{
@@ -86,7 +86,7 @@ void GameStates::handleKeyboardInput(RenderWindow& window, Keyboard::Key event, 
 		selectQuit();
 		break;
 	case Keyboard::Space:
-		setGameState(window, gameState);
+		setGameState(window, gameState, isFromGAMEOVER);
 		break;
 	}
 }
@@ -99,19 +99,20 @@ void GameStates::handleMouseMove(Event::MouseMoveEvent mouse)
 		selectQuit();
 }
 
-void GameStates::handleMouseButton(RenderWindow& window, Mouse::Button button, int& gameState)
+void GameStates::handleMouseButton(RenderWindow& window, Mouse::Button button, int& gameState, bool& isFromGAMEOVER)
 {
 	if (button == Mouse::Button::Left) {
-		setGameState(window, gameState);
+		setGameState(window, gameState, isFromGAMEOVER);
 	}
 }
 
-void GameStates::setGameState(RenderWindow& window, int& gameState)
+void GameStates::setGameState(RenderWindow& window, int& gameState, bool &isFromGAMEOVER)
 {
 	switch (gameState)
 	{
 	case MENU:
 		if (selevtedItemIndex == 0){
+			srand(time(NULL));
 			sound.play();
 			gameState = PLAYING;
 		}
@@ -119,6 +120,8 @@ void GameStates::setGameState(RenderWindow& window, int& gameState)
 			window.close();
 	break;
 	case GAMEOVER:
+		isFromGAMEOVER = true;
+		srand(time(NULL));
 		if (selevtedItemIndex == 0)
 			gameState = MENU;
 		else

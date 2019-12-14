@@ -91,7 +91,7 @@ void Game::getEventFromUser(Time dt)
 			player.handleUserInput(dt, event.key.code);
 			if (Keyboard::isKeyPressed(Keyboard::Space)) {
 				if (gameState == NEXTLEVEL) {
-					designLevel(level + 1);
+					designLevel(level++);
 					gameState = PLAYING;
 				}
 				fire();
@@ -171,6 +171,8 @@ void Game::render()
 	break;
 	
 	case PLAYING:
+		if (isProtected) player.ship.setFillColor(Color::Red);
+		else player.ship.setFillColor(Color::White);
 		player.drawShip(game_window);
 		for (auto aster : asteroids)
 			aster.draw(game_window);
@@ -207,7 +209,7 @@ void Game::updateBullet(Time dt)
 
 void Game::updateAsteroids(Time dt)
 {
-	asters_collision();
+	//asters_collision();
 	start_asteroids = asteroids.begin();
 	while (start_asteroids != asteroids.end()) {
 		if (start_asteroids->isAlive()) {
@@ -282,7 +284,6 @@ void Game::ship_aster_collision()
 			//reset the ship
 			isProtected = true;
 			player.resetShip();
-			std::cout << "life: " << lifeCount << std::endl;
 		}
 		++start_asteroids;
 	}
@@ -297,8 +298,6 @@ void Game::asters_collision()
 			Vector2f pos2 = target.asteroid.getPosition();
 			if (a.getIndex() == target.getIndex()) break;
 			if (isShipCollidewithAster(a.asteroid, target.asteroid)) {
-				//std::cout << "a_vel : " << a.getIndex() << " 1 : " << a.velocity.x << ", " << a.velocity.y << std::endl;
-				//std::cout << "taget_vel : " << target.getIndex() << " 1 : " << target.velocity.x << ", " << target.velocity.y << std::endl;
 				Vector2f offset, tmp;
 				Vector2f distanceVector = pos2 - pos1; //from a  to target
 				float distance = sqrtf(distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y);
@@ -317,18 +316,6 @@ void Game::asters_collision()
 				target.asteroid.move(offset);
 				target.asteroid.setOutlineColor(Color(255%rand(), 255%rand(), 255%rand()));
 				break;
-
-				/*float overlap = 0.5 * (distance - a.asteroid.getRadius() - 2 - target.asteroid.getRadius() - 2);
-				Vector2f offest;
-				offest.x -= overlap * ((pos1.x - pos2.x) / distance);
-				offest.y -= overlap * ((pos1.y - pos2.y) / distance);
-				a.setVelocity((pos2.x - pos1.x) / distance, (pos2.y - pos1.y) / distance);
-				a.asteroid.move(offest);
-
-				offest.x += overlap * ((pos1.x - pos2.x) / distance);
-				offest.y += overlap * ((pos1.y - pos2.y) / distance);
-				target.asteroid.move(offest);
-				target.setVelocity(-(pos1.x - pos2.x) / distance, -(pos1.x - pos2.x) / distance);*/
 				
 			}
 		}
